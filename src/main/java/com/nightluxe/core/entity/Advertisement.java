@@ -1,14 +1,14 @@
 package com.nightluxe.core.entity;
 
 
-import com.nightluxe.enums.Status;
+import com.nightluxe.enums.AdStatus;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "advertisements")
@@ -28,22 +28,32 @@ public class Advertisement {
     @Column(nullable = false)
     private String description;
 
-    @NotNull
+    @Column(nullable = false)
     private Integer price;
 
-    @NotNull
+    @Column(nullable = false)
     private String location;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Status status;
+    private AdStatus status;
 
-    private Integer viewCount;
+    private Integer viewCount = 0;
 
-    private Integer phoneRevealsCount;
+    private Integer phoneRevealsCount = 0;
 
     private LocalDateTime createdAt;
 
     private LocalDateTime expiresAt;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
+
+    @OneToMany(mappedBy = "advertisement", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AdImage> images;
 }

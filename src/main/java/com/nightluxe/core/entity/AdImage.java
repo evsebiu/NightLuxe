@@ -1,9 +1,16 @@
 package com.nightluxe.core.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "images")
+@Table(name = "ad_images")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+
 public class AdImage {
 
 
@@ -13,6 +20,10 @@ public class AdImage {
 
     private String imageUrl;
 
-    private Boolean isCover;
+    private Boolean isCover = false; // false value for default
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "advertisement_id", nullable = false)
+    private Advertisement advertisement;
 
 }

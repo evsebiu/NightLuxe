@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -31,7 +32,7 @@ public class User {
     private String phoneNumber;
 
     @NotNull
-    private String birthDate;
+    private LocalDate birthDate;
 
     @Column(nullable = false)
     private String passwordHash;
@@ -40,6 +41,7 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
+    @Column(nullable = false)
     private Integer creditBalance = 0; // default value
 
     private Boolean isVerified = false;
