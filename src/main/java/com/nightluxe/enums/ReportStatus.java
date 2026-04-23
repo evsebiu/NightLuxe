@@ -1,6 +1,6 @@
 package com.nightluxe.enums;
 
-public enum Report {
+public enum ReportStatus {
     REPORT_OPEN,
     REPORT_RESOLVED
 }

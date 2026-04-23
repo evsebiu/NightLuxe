@@ -1,17 +1,16 @@
 package com.nightluxe.core.entity;
 
 
-import com.nightluxe.enums.Report;
+import com.nightluxe.enums.ReportStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "ad_report")
-@Data
+@Table(name = "ad_reports")
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 
@@ -27,7 +26,13 @@ public class AdReport {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Report report;
+    private ReportStatus reportStatus;
 
     private LocalDateTime createdAt;
+
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "advertisement_id", nullable = false)
+    private Advertisement advertisement;
+
 }

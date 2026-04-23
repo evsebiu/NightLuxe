@@ -3,16 +3,15 @@ package com.nightluxe.core.entity;
 
 import com.nightluxe.enums.TransactionStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "credit_transactions")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 
@@ -42,10 +41,6 @@ public class CreditTransaction {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
     @PrePersist
     protected void onCreate(){
         createdAt = LocalDateTime.now();
@@ -54,5 +49,8 @@ public class CreditTransaction {
         }
     }
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
 }

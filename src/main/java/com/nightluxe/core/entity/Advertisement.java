@@ -3,18 +3,19 @@ package com.nightluxe.core.entity;
 
 import com.nightluxe.enums.AdStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "advertisements")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
+
 public class Advertisement {
 
 
@@ -55,5 +56,5 @@ public class Advertisement {
     private Category category;
 
     @OneToMany(mappedBy = "advertisement", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<AdImage> images;
+    private List<AdImage> images = new ArrayList<>();
 }

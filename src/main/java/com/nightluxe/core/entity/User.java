@@ -4,16 +4,16 @@ package com.nightluxe.core.entity;
 import com.nightluxe.enums.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.Pattern;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name="users")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 
@@ -27,8 +27,9 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
-    // de adaugat regex pentru malta
+
     @Column(unique = true)
+    @Pattern(regexp = "^(\\+356)?(2|7|9)\\d{7}$", message = "Please update to a valid format for Malta - +356")
     private String phoneNumber;
 
     @NotNull
