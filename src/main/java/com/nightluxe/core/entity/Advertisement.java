@@ -5,6 +5,7 @@ import com.nightluxe.enums.AdStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +27,7 @@ public class Advertisement {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
+    @Column(columnDefinition = "TEXT" ,nullable = false)
     private String description;
 
     @Column(nullable = false)
@@ -46,6 +47,18 @@ public class Advertisement {
     private LocalDateTime createdAt;
 
     private LocalDateTime expiresAt;
+
+
+    @PrePersist
+    protected void onCreate(){
+        createdAt = LocalDateTime.now();
+        expiresAt = LocalDateTime.now().plusDays(30L);
+
+        // set a default status
+        if (status == null){
+            status = AdStatus.PENDING;
+        }
+    }
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)

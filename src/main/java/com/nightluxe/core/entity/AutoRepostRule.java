@@ -24,7 +24,7 @@ public class AutoRepostRule {
     @ElementCollection
     private List<LocalTime> scheduledHours;
 
-    private boolean isActive = true;
+    private Boolean isActive = true;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "advertisement_id", nullable = false)
