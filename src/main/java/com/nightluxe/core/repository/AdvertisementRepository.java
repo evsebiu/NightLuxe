@@ -7,7 +7,7 @@ import com.nightluxe.enums.AdStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.awt.print.Pageable;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 
@@ -22,5 +22,5 @@ public interface AdvertisementRepository extends JpaRepository<Advertisement, Lo
     List<Advertisement> findByUserId(Long userId);
 
 
-    Page<Advertisement> findByStatusAndCatgory(AdStatus adStatus, Category category, Pageable pageable);
+    Page<Advertisement> findByStatusAndCategory(AdStatus adStatus, Category category, Pageable pageable);
 }

@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Entity
@@ -39,11 +40,11 @@ public class CreditTransaction {
     private TransactionStatus status;
 
     @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     @PrePersist
     protected void onCreate(){
-        createdAt = LocalDateTime.now();
+        createdAt = Instant.now();
         if (status == null) {
             status=TransactionStatus.PENDING;
         }

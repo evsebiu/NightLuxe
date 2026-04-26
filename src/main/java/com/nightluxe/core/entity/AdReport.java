@@ -5,6 +5,7 @@ import com.nightluxe.enums.ReportStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Entity
@@ -28,7 +29,7 @@ public class AdReport {
     @Column(nullable = false)
     private ReportStatus reportStatus;
 
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
 
     @ManyToOne(fetch = FetchType.LAZY)

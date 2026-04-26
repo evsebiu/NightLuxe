@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -47,11 +48,11 @@ public class User {
 
     private Boolean isVerified = false;
 
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     @PrePersist
     protected void onCreate(){
-        createdAt = LocalDateTime.now();
+        createdAt = Instant.now();
         if (role == null){
             role = Role.ROLE_USER;
         }

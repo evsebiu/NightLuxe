@@ -9,6 +9,6 @@ import java.util.Optional;
 
 public interface AdReportRepository extends JpaRepository<AdReport, Long> {
     List<AdReport> findByReason(String reason);
-    List<AdReport> findByStatus(ReportStatus status);
+    List<AdReport> findByReportStatus(ReportStatus status);
     Optional<AdReport> findByAdvertisementId(Long advertisementId);
 }

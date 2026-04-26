@@ -5,8 +5,10 @@ import com.nightluxe.enums.AdStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,15 +46,15 @@ public class Advertisement {
 
     private Integer phoneRevealsCount = 0;
 
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
-    private LocalDateTime expiresAt;
+    private Instant expiresAt;
 
 
     @PrePersist
     protected void onCreate(){
-        createdAt = LocalDateTime.now();
-        expiresAt = LocalDateTime.now().plusDays(30L);
+        createdAt = Instant.now();
+        expiresAt = Instant.now().plus(30, ChronoUnit.DAYS);
 
         // set a default status
         if (status == null){

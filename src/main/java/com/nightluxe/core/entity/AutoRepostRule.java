@@ -4,6 +4,8 @@ package com.nightluxe.core.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -22,7 +24,9 @@ public class AutoRepostRule {
     private Long id;
 
     @ElementCollection
-    private List<LocalTime> scheduledHours;
+    private List<Instant> scheduledHours;
+
+    private Instant nextRepostAt;
 
     private Boolean isActive = true;
 
