@@ -1,7 +1,7 @@
 package com.nightluxe.core.repository;
 
 import com.nightluxe.core.entity.AdReport;
-import com.nightluxe.enums.ReportStatus;
+import com.nightluxe.core.enums.ReportStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

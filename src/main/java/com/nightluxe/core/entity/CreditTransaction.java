@@ -1,13 +1,12 @@
 package com.nightluxe.core.entity;
 
 
-import com.nightluxe.enums.TransactionStatus;
+import com.nightluxe.core.enums.TransactionStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "credit_transactions")

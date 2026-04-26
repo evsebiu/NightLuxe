@@ -2,8 +2,8 @@ package com.nightluxe.core.mapper;
 
 
 import com.nightluxe.core.entity.User;
-import com.nightluxe.dto.request.RegisterRequestDTO;
-import com.nightluxe.dto.response.UserResponseDTO;
+import com.nightluxe.core.dto.request.RegisterRequestDTO;
+import com.nightluxe.core.dto.response.UserResponseDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;

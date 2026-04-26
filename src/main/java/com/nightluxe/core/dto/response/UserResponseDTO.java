@@ -1,4 +1,4 @@
-package com.nightluxe.dto.response;
+package com.nightluxe.core.dto.response;
 
 import lombok.Data;
 

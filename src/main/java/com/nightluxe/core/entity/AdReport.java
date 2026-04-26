@@ -1,12 +1,11 @@
 package com.nightluxe.core.entity;
 
 
-import com.nightluxe.enums.ReportStatus;
+import com.nightluxe.core.enums.ReportStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "ad_reports")

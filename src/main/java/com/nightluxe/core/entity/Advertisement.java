@@ -1,13 +1,11 @@
 package com.nightluxe.core.entity;
 
 
-import com.nightluxe.enums.AdStatus;
+import com.nightluxe.core.enums.AdStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;

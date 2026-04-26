@@ -1,7 +1,7 @@
 package com.nightluxe.core.repository;
 
 import com.nightluxe.core.entity.CreditTransaction;
-import com.nightluxe.enums.TransactionStatus;
+import com.nightluxe.core.enums.TransactionStatus;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,7 +1,7 @@
 package com.nightluxe.core.entity;
 
 
-import com.nightluxe.enums.Role;
+import com.nightluxe.core.enums.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -9,7 +9,6 @@ import lombok.*;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name="users")

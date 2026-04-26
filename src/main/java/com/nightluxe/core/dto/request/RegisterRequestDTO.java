@@ -1,4 +1,4 @@
-package com.nightluxe.dto.request;
+package com.nightluxe.core.dto.request;
 
 import jakarta.validation.constraints.*;
 import lombok.Data;

@@ -1,8 +1,8 @@
 package com.nightluxe.core.controller;
 
 import com.nightluxe.core.service.AuthService;
-import com.nightluxe.dto.request.RegisterRequestDTO;
-import com.nightluxe.dto.response.UserResponseDTO;
+import com.nightluxe.core.dto.request.RegisterRequestDTO;
+import com.nightluxe.core.dto.response.UserResponseDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

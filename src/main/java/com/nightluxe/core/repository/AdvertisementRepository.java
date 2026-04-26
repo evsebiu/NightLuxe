@@ -3,7 +3,7 @@ package com.nightluxe.core.repository;
 import com.nightluxe.core.entity.Advertisement;
 import com.nightluxe.core.entity.Category;
 import com.nightluxe.core.entity.User;
-import com.nightluxe.enums.AdStatus;
+import com.nightluxe.core.enums.AdStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 
