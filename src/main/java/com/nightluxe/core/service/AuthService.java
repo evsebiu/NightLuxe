@@ -2,12 +2,17 @@ package com.nightluxe.core.service;
 
 
 import com.nightluxe.core.Exceptions.IllegalArgument;
+import com.nightluxe.core.dto.request.LoginRequestDTO;
+import com.nightluxe.core.dto.response.TokenResponseDTO;
 import com.nightluxe.core.entity.User;
 import com.nightluxe.core.mapper.UserMapper;
 import com.nightluxe.core.repository.UserRepository;
 import com.nightluxe.core.dto.request.RegisterRequestDTO;
 import com.nightluxe.core.dto.response.UserResponseDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +27,25 @@ public class AuthService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder; // need spring security configuration
+    private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
+
+
+
+    public TokenResponseDTO login(LoginRequestDTO request){
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.email(),
+                        request.password()
+                )
+        );
+
+        var user = userRepository.findByEmail(request.email())
+                .orElseThrow(()-> new UsernameNotFoundException("User nor found"));
+
+        var jwtToken = jwtService.generateToken(user);
+        return new TokenResponseDTO(jwtToken);
+    }
 
 
     @Transactional
@@ -41,6 +65,7 @@ public class AuthService {
         if (Period.between(request.getBirthDate(), LocalDate.now()).getYears() < 18) {
             throw new IllegalArgument("You must have 18+ years to register");
         }
+
 
 
         // map to entity
