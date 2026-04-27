@@ -1,0 +1,19 @@
+### 1. Testare Register (Dacă nu ai deja un user creat)
+POST http://localhost:8080/api/v1/auth/register
+Content-Type: application/json
+
+{
+  "email": "test@nightluxe.com",
+  "password": "ParolaGrea123!",
+  "birthDate": "1995-05-20",
+  "phoneNumber": "+356-81142076"
+}
+
+### 2. Testare Login
+POST http://localhost:8080/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@nightluxe.com",
+  "password": "ParolaGrea123!"
+}

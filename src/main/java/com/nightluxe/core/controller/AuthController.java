@@ -1,5 +1,7 @@
 package com.nightluxe.core.controller;
 
+import com.nightluxe.core.dto.request.LoginRequestDTO;
+import com.nightluxe.core.dto.response.TokenResponseDTO;
 import com.nightluxe.core.service.AuthService;
 import com.nightluxe.core.dto.request.RegisterRequestDTO;
 import com.nightluxe.core.dto.response.UserResponseDTO;
@@ -22,7 +24,11 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<UserResponseDTO> register(@Valid @RequestBody RegisterRequestDTO requestDTO){
-        UserResponseDTO responseDTO = authService.register(requestDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
+        return ResponseEntity.ok(authService.register(requestDTO));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<TokenResponseDTO> login (@RequestBody @Valid LoginRequestDTO request){
+        return  ResponseEntity.ok(authService.login(request));
     }
 }

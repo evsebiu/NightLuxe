@@ -20,7 +20,7 @@ public class RegisterRequestDTO {
     private String password;
 
     @NotBlank(message = "Phone number is required")
-    @Pattern(regexp = "^(\\+356)?(2|7|9)\\d{7}$", message = "Format is invalid for Malta +356)")
+    //@Pattern(regexp = "^(\\+356)?(2|7|9)\\d{7}$", message = "Format is invalid for Malta +356)")
     private String phoneNumber;
 
     @NotNull(message = "Birth date is required")

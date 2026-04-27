@@ -34,7 +34,7 @@ public class User implements UserDetails {
 
 
     @Column(unique = true)
-    @Pattern(regexp = "^(\\+356)?(2|7|9)\\d{7}$", message = "Please update to a valid format for Malta - +356")
+    //@Pattern(regexp = "^(\\+356)?(2|7|9)\\d{7}$", message = "Please update to a valid format for Malta - +356")
     private String phoneNumber;
 
     @NotNull
