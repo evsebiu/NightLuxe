@@ -14,8 +14,8 @@ import java.util.List;
 
 public class CategoryService {
 
-    private CategoryRepository categoryRepository;
-    private CategoryMapper categoryMapper;
+    private final CategoryRepository categoryRepository;
+    private final CategoryMapper categoryMapper;
 
 
     @Transactional(readOnly = true)
