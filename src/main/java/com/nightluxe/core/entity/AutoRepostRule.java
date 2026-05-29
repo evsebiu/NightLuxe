@@ -24,7 +24,7 @@ public class AutoRepostRule {
     private Long id;
 
     @ElementCollection
-    private List<Instant> scheduledHours;
+    private List<LocalTime> scheduledHours;
 
     private Instant nextRepostAt;
 

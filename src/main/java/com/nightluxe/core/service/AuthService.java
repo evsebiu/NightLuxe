@@ -1,7 +1,7 @@
 package com.nightluxe.core.service;
 
 
-import com.nightluxe.core.Exceptions.IllegalArgument;
+import com.nightluxe.core.exceptions.BadRequestException;
 import com.nightluxe.core.dto.request.LoginRequestDTO;
 import com.nightluxe.core.dto.response.TokenResponseDTO;
 import com.nightluxe.core.entity.User;
@@ -52,18 +52,18 @@ public class AuthService {
     public UserResponseDTO register(RegisterRequestDTO request) {
         //1. does email exists?
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new IllegalArgument("E-mail is already used by a user.");
+            throw new BadRequestException("E-mail is already used by a user.");
         }
 
         //2. does phone number exists?
         if (userRepository.findByPhoneNumber(request.getPhoneNumber()).isPresent()) {
-            throw new IllegalArgument("Phone number is already used by a user.");
+            throw new BadRequestException("Phone number is already used by a user.");
         }
 
         //3. 18+ verification
 
         if (Period.between(request.getBirthDate(), LocalDate.now()).getYears() < 18) {
-            throw new IllegalArgument("You must have 18+ years to register");
+            throw new BadRequestException("You must have 18+ years to register");
         }
 
 
