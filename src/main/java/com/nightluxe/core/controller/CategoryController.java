@@ -28,4 +28,10 @@ public class CategoryController {
     public ResponseEntity<List<CategoryResponseDTO>> getAllCategories(){
         return ResponseEntity.ok(categoryService.getAllCategories());
     }
+
+    @GetMapping
+    public ResponseEntity<List<CategoryResponseDTO>> getCategories(){
+        List<CategoryResponseDTO> categories = categoryService.getActiveCategoryHierarchy();
+        return ResponseEntity.ok(categories);
+    }
 }
