@@ -11,13 +11,17 @@ import com.nightluxe.core.mapper.AdvertisementMapper;
 import com.nightluxe.core.repository.AdImageRepository;
 import com.nightluxe.core.repository.AdvertisementRepository;
 import com.nightluxe.core.repository.CategoryRepository;
-import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import com.nightluxe.core.dto.request.AdSearchCriteriaDTO;
+import com.nightluxe.core.specification.AdvertisementSpecification;
+
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -71,11 +75,17 @@ public class AdvertisementService {
 
 
     @Transactional
-    public AdvertisementResponseDTO uploadImages(Long adId, List<MultipartFile> files){
+    public AdvertisementResponseDTO uploadImages(Long adId,
+                                                 List<MultipartFile> files,
+                                                 User currentUser){
          // 1. we search for ad that photos belong
         Advertisement ad = advertisementRepository.findById(adId)
                 .orElseThrow(()-> new BadRequestException("Ad doesn't exist."));
 
+
+        if (!ad.getUser().getId().equals(currentUser.getId())){
+            throw new RuntimeException("Unauthorized action. You can't add images to an add that doesn't belong to you.");
+        }
         // 2. check that folder "uploads/" exists on disk
         try{
             Files.createDirectories(Paths.get(UPLOAD_DIR));
@@ -119,4 +129,47 @@ public class AdvertisementService {
         return advertisementMapper.toResponseDTO(ad);
     }
 
+
+    @Transactional
+    public void deleteAdvertisement(Long adId, User currentUser){
+        Advertisement advertisement = advertisementRepository.findById(adId)
+                .orElseThrow(()-> new BadRequestException("Ad cannot be found."));
+
+        if (!advertisement.getUser().getId().equals(currentUser.getId())){
+            throw new RuntimeException("Warning! Ad doesn't belong to your account.");
+        }
+
+        List<AdImage> images = advertisement.getImages();
+
+        if (images != null && !images.isEmpty()){
+            for (AdImage image : images){
+                String imageUrl = image.getImageUrl();
+
+                if (imageUrl != null && imageUrl.startsWith("/")){
+                    String localPathString = imageUrl.substring(1);
+                    Path filePath = Paths.get(localPathString);
+
+                    try{
+                        Files.deleteIfExists(filePath);
+                    } catch (IOException e){
+                        System.err.println("Error at deleting file : " + filePath.toString());
+                    }
+                }
+            }
+        }
+
+        advertisementRepository.delete(advertisement);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<AdvertisementResponseDTO> getAdvertisement(AdSearchCriteriaDTO criteria, Pageable pageable){
+
+        // build specification based on sent filters
+        Specification<Advertisement> spec = AdvertisementSpecification.getAdvertisementsByCriteria(criteria);
+
+        // interogate db using specification and pageable object
+        Page<Advertisement> adPage = advertisementRepository.findAll(spec, pageable);
+
+        return adPage.map(advertisementMapper::toResponseDTO);
+    }
 }

@@ -14,5 +14,5 @@ public record AdvertisementResponseDTO(
         Integer phoneRevealsCount,
         Instant createdAt,
         Instant expiresAt,
-        List<String> imageUrls ) {
+        List<String> imageUrl ) {
 }

@@ -12,6 +12,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import com.nightluxe.core.dto.request.AdSearchCriteriaDTO;
+
 
 import java.util.List;
 
@@ -38,10 +42,27 @@ public class AdvertisementController {
     @PostMapping("/{id}/images")
     public ResponseEntity<AdvertisementResponseDTO> uploadImages(
             @PathVariable Long id,
-            @RequestParam("files")List<MultipartFile> files){
+            @RequestParam("files")List<MultipartFile> files,
+            @AuthenticationPrincipal User currentUser){
 
-        AdvertisementResponseDTO response = advertisementService.uploadImages(id, files);
+        AdvertisementResponseDTO response = advertisementService.uploadImages(id, files, currentUser);
         return ResponseEntity.ok(response);
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteAdvertisement(@PathVariable Long id,
+                                                    @AuthenticationPrincipal User currentUser){
+        advertisementService.deleteAdvertisement(id, currentUser);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<AdvertisementResponseDTO>> getAdvertisement(
+            AdSearchCriteriaDTO criteria,
+            Pageable pageable){
+
+        Page<AdvertisementResponseDTO> response = advertisementService.getAdvertisement(criteria, pageable);
+        return ResponseEntity.ok(response);
+    }
 }
