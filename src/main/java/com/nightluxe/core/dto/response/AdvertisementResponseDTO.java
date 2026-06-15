@@ -11,7 +11,7 @@ public record AdvertisementResponseDTO(
         String location,
         String categoryName,
         Integer viewCount,
-        Integer phoneRevealCount,
+        Integer phoneRevealsCount,
         Instant createdAt,
         Instant expiresAt,
         List<String> imageUrls ) {

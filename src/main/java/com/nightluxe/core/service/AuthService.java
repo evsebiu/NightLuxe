@@ -33,6 +33,9 @@ public class AuthService {
 
 
     public TokenResponseDTO login(LoginRequestDTO request){
+        System.out.println(">>> ÎNCERCARE DE LOGIN PENTRU: " + request.email());
+        System.out.println(">>> PAROLA PRIMITĂ: " + request.password());
+
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.email(),
