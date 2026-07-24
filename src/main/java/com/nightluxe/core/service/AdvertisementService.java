@@ -1,6 +1,7 @@
 package com.nightluxe.core.service;
 
 import com.nightluxe.core.dto.request.AdvertisementRequestDTO;
+import com.nightluxe.core.dto.request.PromotionRequestDTO;
 import com.nightluxe.core.dto.response.AdvertisementResponseDTO;
 import com.nightluxe.core.entity.AdImage;
 import com.nightluxe.core.entity.Advertisement;
@@ -11,6 +12,7 @@ import com.nightluxe.core.mapper.AdvertisementMapper;
 import com.nightluxe.core.repository.AdImageRepository;
 import com.nightluxe.core.repository.AdvertisementRepository;
 import com.nightluxe.core.repository.CategoryRepository;
+import com.nightluxe.core.repository.UserRepository;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,6 +30,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.IllegalFormatCodePointException;
 import java.util.List;
@@ -42,6 +46,7 @@ public class AdvertisementService {
     private final AdvertisementMapper advertisementMapper;
     private final AdImageRepository adImageRepository;
     private final CategoryRepository categoryRepository;
+    private final UserRepository userRepository;
 
     //for images
     private final String UPLOAD_DIR = "uploads/";
@@ -171,5 +176,50 @@ public class AdvertisementService {
         Page<Advertisement> adPage = advertisementRepository.findAll(spec, pageable);
 
         return adPage.map(advertisementMapper::toResponseDTO);
+    }
+
+    @Transactional
+    public AdvertisementResponseDTO promoteAd(Long adId, PromotionRequestDTO request, User currentUser){
+
+        //1. find ad and we search if it belongs to user
+        Advertisement ad  = advertisementRepository.findById(adId)
+                .orElseThrow(()  -> new RuntimeException("Ad doesn't exist."));
+
+        if (!ad.getUser().getId().equals(currentUser.getId())){
+            throw new RuntimeException("Action denied. You can't promote an ad that doesn't belongs to you");
+        }
+
+        // 2. define costs
+        int cost = 0;
+        Instant newPromotedUntil = ad.getPromotedUntil() !=null ? ad.getPromotedUntil() : Instant.now();
+
+        switch (request.promotionType().toUpperCase()){
+            case "BUMP":
+                cost = 5;
+                ad.setCreatedAt(Instant.now());
+                break;
+            case "TOP_AD_7_DAYS":
+                cost= 20;
+                ad.setPromotedUntil(newPromotedUntil.plus(7, ChronoUnit.DAYS));
+                break;
+            case "HIGHLIGHT":
+                cost=10;
+                ad.setIsHighlighted(true);
+            default:
+                throw new BadRequestException("Promotion type unavailable");
+        }
+
+        // 3. Extract credits ATOMIC from database
+
+        int updatedRows = userRepository.deductCredits(currentUser.getId(), cost);
+        if (updatedRows == 0){
+            throw new BadRequestException("Not enough funds for this promotion");
+        }
+
+        // 4. Save updated on ad
+        Advertisement savedAd = advertisementRepository.save(ad);
+
+        return advertisementMapper.toResponseDTO(savedAd);
+
     }
 }

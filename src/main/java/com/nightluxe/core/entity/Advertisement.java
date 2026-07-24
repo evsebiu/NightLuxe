@@ -60,6 +60,13 @@ public class Advertisement {
         }
     }
 
+
+    @Column(name = "promoted_until")
+    private Instant promotedUntil;
+
+    @Column(name = "is_highlighted", nullable = false)
+    private Boolean isHighlighted;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;

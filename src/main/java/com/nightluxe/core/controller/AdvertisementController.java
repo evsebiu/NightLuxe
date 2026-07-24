@@ -2,11 +2,15 @@ package com.nightluxe.core.controller;
 
 
 import com.nightluxe.core.dto.request.AdvertisementRequestDTO;
+import com.nightluxe.core.dto.request.PromotionRequestDTO;
 import com.nightluxe.core.dto.response.AdvertisementResponseDTO;
 import com.nightluxe.core.entity.User;
 import com.nightluxe.core.service.AdvertisementService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -64,5 +68,48 @@ public class AdvertisementController {
 
         Page<AdvertisementResponseDTO> response = advertisementService.getAdvertisement(criteria, pageable);
         return ResponseEntity.ok(response);
+    }
+
+    // secured endpoint - buying a package of promotion
+    @PostMapping("/{id}/promote")
+    public ResponseEntity<AdvertisementResponseDTO> promoteAd(
+            @PathVariable Long id,
+            @Valid @RequestBody PromotionRequestDTO request,
+            @AuthenticationPrincipal User currentUser){
+
+        AdvertisementResponseDTO updatedAd = advertisementService.promoteAd(id,request,currentUser);
+
+        return ResponseEntity.ok(updatedAd);
+    }
+
+    // public endpoints - search and listings ads
+
+    @GetMapping
+    public ResponseEntity<Page<AdvertisementResponseDTO>> getAdvertisements(
+            AdSearchCriteriaDTO criteria,
+            @PageableDefault(size = 20) Pageable clientPageable){
+        /*premium architecture
+        we ignore sorting sent by client for business reasons
+        override rules by sorting like:
+        1. promotedUntil DESC NULLS LAST -> Top ads stays up. Those who doesn't have TOP UP(NULL) drops.
+        2. createdAt DESC -> Afte what TOP ADS ends, we sort the others by most recents
+         */
+
+        Sort premiumBusinessSort = Sort.by(
+                Sort.Order.desc("promotedUntil").nullsLast(),
+                Sort.Order.desc("createdAt")
+        );
+
+        // we create a new Pageable, mentaining only the bage and size from client, but we apply our rule
+
+        Pageable enforcePageable = PageRequest.of(
+                clientPageable.getPageNumber(),
+                clientPageable.getPageSize(),
+                premiumBusinessSort
+        );
+
+        Page<AdvertisementResponseDTO> responseDTO = advertisementService.getAdvertisement(criteria, enforcePageable);
+
+        return ResponseEntity.ok(responseDTO);
     }
 }

@@ -4,13 +4,18 @@ import com.nightluxe.core.entity.Advertisement;
 import com.nightluxe.core.entity.Category;
 import com.nightluxe.core.entity.User;
 import com.nightluxe.core.enums.AdStatus;
+import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
+import java.time.Instant;
 import java.util.List;
 
 @Repository
@@ -24,6 +29,9 @@ public interface AdvertisementRepository extends JpaRepository<Advertisement, Lo
     List<Advertisement> findByLocationContainingIgnoreCase(String location); //for example a city search
     List<Advertisement> findByUserId(Long userId);
 
-
     Page<Advertisement> findByStatusAndCategory(AdStatus adStatus, Category category, Pageable pageable);
+
+    @Modifying
+    @Query("UPDATE Advertisement a SET a.promotedUntil = null, a.isHighlighted = false WHERE a.promotedUntil < :now")
+    int clearExpiredPromotions(@Param("now") Instant now);
 }
