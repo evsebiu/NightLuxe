@@ -32,6 +32,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/auth/**", "/error").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/categories/**").permitAll()
                         .requestMatchers("/api/v1/payments/crypto/webhook").permitAll()
+                        .requestMatchers("/api/v1/moderation/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

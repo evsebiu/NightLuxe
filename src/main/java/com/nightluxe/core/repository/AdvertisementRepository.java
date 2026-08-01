@@ -23,10 +23,15 @@ public interface AdvertisementRepository extends JpaRepository<Advertisement, Lo
 
 
     List<Advertisement> findByPrice(Integer price);
+
     List<Advertisement> findByTitleContainingIgnoreCase(String title);
+
     List<Advertisement> findByStatusAndCategory(AdStatus status, Category category);
+
     List<Advertisement> findByUser(User user);
+
     List<Advertisement> findByLocationContainingIgnoreCase(String location); //for example a city search
+
     List<Advertisement> findByUserId(Long userId);
 
     Page<Advertisement> findByStatusAndCategory(AdStatus adStatus, Category category, Pageable pageable);
@@ -34,4 +39,19 @@ public interface AdvertisementRepository extends JpaRepository<Advertisement, Lo
     @Modifying
     @Query("UPDATE Advertisement a SET a.promotedUntil = null, a.isHighlighted = false WHERE a.promotedUntil < :now")
     int clearExpiredPromotions(@Param("now") Instant now);
+
+    // find all ads for an specified user
+    Page<Advertisement> findByUserId(Long userId, Pageable pageable);
+
+    @Modifying
+    @Query("UPDATE Advertisement a SET a.viewCount = a.viewCount + 1 WHERE a.id = :adId ")
+    void incrementViewCount(@Param("adId") Long adId);
+
+
+    @Modifying
+    @Query("UPDATE Advertisement a SET a.phoneRevealsCount = a.phoneRevealsCount + 1 WHERE a.id = :adId")
+    void incrementPhoneRevealsCount(@Param("adId") Long adId);
+
+
 }
+

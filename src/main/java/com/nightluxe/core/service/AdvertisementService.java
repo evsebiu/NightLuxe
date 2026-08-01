@@ -220,6 +220,35 @@ public class AdvertisementService {
         Advertisement savedAd = advertisementRepository.save(ad);
 
         return advertisementMapper.toResponseDTO(savedAd);
+    }
 
+
+    @Transactional
+    public AdvertisementResponseDTO getAdvertisementById(Long id){
+        Advertisement ad = advertisementRepository.findById(id)
+                .orElseThrow(()-> new BadRequestException("Ad cannot be found"));
+
+        // increment view count
+        advertisementRepository.incrementViewCount(id);
+
+        return advertisementMapper.toResponseDTO(ad);
+    }
+
+    @Transactional
+    public String revealPhoneNumber(Long adId){
+        Advertisement ad = advertisementRepository.findById(adId)
+                .orElseThrow(()-> new BadRequestException("Ad cannot be found"));
+
+        // increment phone view count to be shown
+
+        advertisementRepository.incrementPhoneRevealsCount(adId);
+
+        return ad.getUser().getPhoneNumber();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<AdvertisementResponseDTO> getMyAdvertisements(User currentUser, Pageable pageable){
+        Page<Advertisement> userAds = advertisementRepository.findByUserId(currentUser.getId(), pageable);
+        return userAds.map(advertisementMapper::toResponseDTO);
     }
 }

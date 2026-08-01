@@ -112,4 +112,20 @@ public class AdvertisementController {
 
         return ResponseEntity.ok(responseDTO);
     }
+
+
+    //PUBLIC ENDPOINT
+    @GetMapping("/{id}")
+    public ResponseEntity<AdvertisementResponseDTO> getAdDetails(@PathVariable Long id){
+        AdvertisementResponseDTO response = advertisementService.getAdvertisementById(id);
+
+        return ResponseEntity.ok(response);
+    }
+
+    // PUBLIC ENDPOINT
+    @GetMapping("/{id}/phone")
+    public ResponseEntity<String> getPhoneNumber(@PathVariable Long id){
+        String phoneNumber = advertisementService.revealPhoneNumber(id);
+        return ResponseEntity.ok(phoneNumber);
+    }
 }

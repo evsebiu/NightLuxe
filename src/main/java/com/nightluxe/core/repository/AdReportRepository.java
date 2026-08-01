@@ -11,4 +11,6 @@ public interface AdReportRepository extends JpaRepository<AdReport, Long> {
     List<AdReport> findByReason(String reason);
     List<AdReport> findByReportStatus(ReportStatus status);
     Optional<AdReport> findByAdvertisementId(Long advertisementId);
+
+    long countByAdvertisementIdAndReportStatus(Long advertisementId, ReportStatus reportStatus);
 }
