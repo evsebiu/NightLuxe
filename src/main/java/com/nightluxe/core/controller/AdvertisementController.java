@@ -1,6 +1,7 @@
 package com.nightluxe.core.controller;
 
 
+import com.nightluxe.core.dto.request.AdvertisementVisibilityRequestDTO;
 import com.nightluxe.core.dto.request.AdvertisementRequestDTO;
 import com.nightluxe.core.dto.request.PromotionRequestDTO;
 import com.nightluxe.core.dto.response.AdvertisementResponseDTO;
@@ -61,15 +62,6 @@ public class AdvertisementController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping
-    public ResponseEntity<Page<AdvertisementResponseDTO>> getAdvertisement(
-            AdSearchCriteriaDTO criteria,
-            Pageable pageable){
-
-        Page<AdvertisementResponseDTO> response = advertisementService.getAdvertisement(criteria, pageable);
-        return ResponseEntity.ok(response);
-    }
-
     // secured endpoint - buying a package of promotion
     @PostMapping("/{id}/promote")
     public ResponseEntity<AdvertisementResponseDTO> promoteAd(
@@ -127,5 +119,25 @@ public class AdvertisementController {
     public ResponseEntity<String> getPhoneNumber(@PathVariable Long id){
         String phoneNumber = advertisementService.revealPhoneNumber(id);
         return ResponseEntity.ok(phoneNumber);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<AdvertisementResponseDTO> updateDetails(@Valid @RequestBody AdvertisementRequestDTO request,
+                                                                  @AuthenticationPrincipal User currentUser,
+                                                                  @PathVariable("id") Long id){
+
+        AdvertisementResponseDTO updateAdvertisement = advertisementService.updateAdvertisement(id, currentUser, request);
+        return ResponseEntity.ok(updateAdvertisement);
+    }
+
+    @PatchMapping("/{id}/visibility")
+    public ResponseEntity<AdvertisementResponseDTO> changeVisibility(@PathVariable("id") Long id,
+                                                                     @Valid @RequestBody AdvertisementVisibilityRequestDTO request,
+                                                                     @AuthenticationPrincipal User currentUser){
+
+        AdvertisementResponseDTO changeVisibility = advertisementService.changeVisibility(id, currentUser, request.status());
+
+        return ResponseEntity.ok(changeVisibility);
+
     }
 }

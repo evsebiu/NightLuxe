@@ -14,5 +14,8 @@ public record AdvertisementResponseDTO(
         Integer phoneRevealsCount,
         Instant createdAt,
         Instant expiresAt,
-        List<String> imageUrl ) {
+        List<String> imageUrl,
+        String phoneNumber,
+        Boolean isHighlighted,
+        Instant promotedUntil) {
 }

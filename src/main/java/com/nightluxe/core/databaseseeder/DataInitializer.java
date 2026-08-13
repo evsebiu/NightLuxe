@@ -19,15 +19,15 @@ public class DataInitializer implements CommandLineRunner {
 
             // 1. Categoria principală Escorte (Generatoare de venit - requiresCredit = true)
             Category escorte = new Category();
-            escorte.setName("Escorte");
-            escorte.setSlug("escorte-malta");
+            escorte.setName("Escorts");
+            escorte.setSlug("escorts-malta");
             escorte.setRequiresCredit(true);
             categoryRepository.save(escorte);
 
-            // 2. Subcategorie pentru Escorte
+            // 2. Subcategorie pentru Real Estate
             Category escorteIndependenti = new Category();
-            escorteIndependenti.setName("Independenți");
-            escorteIndependenti.setSlug("escorte-independente");
+            escorteIndependenti.setName("Real-Estate");
+            escorteIndependenti.setSlug("real-estate");
             escorteIndependenti.setRequiresCredit(true);
             escorteIndependenti.setParentCategory(escorte);
             categoryRepository.save(escorteIndependenti);
@@ -39,10 +39,10 @@ public class DataInitializer implements CommandLineRunner {
             auto.setRequiresCredit(false);
             categoryRepository.save(auto);
 
-            // 4. Categoria principală Imobiliare
+            // 4. Categoria principală servicii
             Category imobiliare = new Category();
-            imobiliare.setName("Imobiliare");
-            imobiliare.setSlug("imobiliare-malta");
+            imobiliare.setName("Services");
+            imobiliare.setSlug("services-malta");
             imobiliare.setRequiresCredit(false);
             categoryRepository.save(imobiliare);
 

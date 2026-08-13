@@ -1,5 +1,6 @@
 package com.nightluxe.core.dto.request;
 
+import com.nightluxe.core.enums.UserAdDashboard;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -22,7 +23,10 @@ public record AdvertisementRequestDTO(
         String location,
 
         @NotNull(message = "You must select a category for ad.")
-        Long categoryId
+        Long categoryId,
+
+        @NotBlank(message = "Phone number is required.")
+        String phoneNumber
 
 ) {
 

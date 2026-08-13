@@ -6,7 +6,7 @@ import com.nightluxe.core.enums.TransactionStatus;
 import com.nightluxe.core.repository.CreditTransactionRepository;
 import com.nightluxe.core.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
+import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

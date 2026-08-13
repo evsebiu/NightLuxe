@@ -24,7 +24,3 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("UPDATE User u SET u.creditBalance = u.creditBalance + :amount WHERE u.id = :userId")
     int addCredits(@Param("userId") Long userId, @Param("amount") Integer amount);
 }
-
-
-
-}

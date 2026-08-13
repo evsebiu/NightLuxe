@@ -14,6 +14,7 @@ import java.time.Instant;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -26,7 +27,7 @@ public class AutoRepostCronService {
     private final AdvertisementRepository advertisementRepository;
     private final UserRepository userRepository;
 
-    private static final int BUMP_COST = 5; // standard cost for an optimezed BUMP;
+    private static final int BUMP_COST = 20; // standard cost for an optimezed BUMP;
 
     @Transactional
     public void processAutoReposts(){
@@ -42,21 +43,24 @@ public class AutoRepostCronService {
             Advertisement ad = rule.getAdvertisement();
             Long userId = ad.getUser().getId();
 
-            // try to extract atomic credits
             int rowsUpdated = userRepository.deductCredits(userId, BUMP_COST);
 
             if (rowsUpdated == 1){
-                // user had funds ->  we do BUMP
-                ad.setCreatedAt(Instant.now());
-                advertisementRepository.save(ad);
-                log.debug("Auto-bump positive for ad ID: {}");
-            } else {
-                // user doesn't have credits, we stop the rule.
-            } rule.setIsActive(false);
-            autoRepostRuleRepository.save(rule);
-            log.warn("Auto-bump failed (insufficient funds) for user ID: {}. Rule deactivated ", userId);
-        }
+                // Logica NOUĂ de BUMP (la fel ca în AdvertisementService)
+                Instant baseTime = (ad.getPromotedUntil() != null && ad.getPromotedUntil().isAfter(Instant.now()))
+                        ? ad.getPromotedUntil()
+                        : Instant.now();
 
+                ad.setPromotedUntil(baseTime.plus(6, ChronoUnit.HOURS));
+
+                advertisementRepository.save(ad);
+                log.debug("Auto-bump positive for ad ID: {}", ad.getId());
+            } else {
+                rule.setIsActive(false);
+                autoRepostRuleRepository.save(rule);
+                log.warn("Auto-bump failed (insufficient funds) for user ID: {}. Rule deactivated ", userId);
+            }
+        }
         log.info("Auto-bump completed for hour: {}", currentHour);
     }
 

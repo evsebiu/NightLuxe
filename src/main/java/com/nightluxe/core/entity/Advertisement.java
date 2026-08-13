@@ -2,6 +2,7 @@ package com.nightluxe.core.entity;
 
 
 import com.nightluxe.core.enums.AdStatus;
+import com.nightluxe.core.enums.UserAdDashboard;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -36,6 +37,9 @@ public class Advertisement {
     @Column(nullable = false)
     private String location;
 
+    @Column(name = "phone_number", nullable = false)
+    private String phoneNumber;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private AdStatus status;
@@ -47,6 +51,10 @@ public class Advertisement {
     private Instant createdAt;
 
     private Instant expiresAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserAdDashboard userAdDashboard = UserAdDashboard.ACTIVE;
 
 
     @PrePersist
@@ -65,7 +73,7 @@ public class Advertisement {
     private Instant promotedUntil;
 
     @Column(name = "is_highlighted", nullable = false)
-    private Boolean isHighlighted;
+    private Boolean isHighlighted = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)

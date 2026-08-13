@@ -53,5 +53,8 @@ public interface AdvertisementRepository extends JpaRepository<Advertisement, Lo
     void incrementPhoneRevealsCount(@Param("adId") Long adId);
 
 
+
+
+
 }
 

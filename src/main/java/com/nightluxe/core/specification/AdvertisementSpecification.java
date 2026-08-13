@@ -32,6 +32,8 @@ public class AdvertisementSpecification {
             //filter by category
             if (criteria.categoryId() != null) {
                 predicates.add(criteriaBuilder.equal(root.get("category").get("id"), criteria.categoryId()));
+            } else {
+                predicates.add(criteriaBuilder.notEqual(root.get("category").get("id"), 1L));
             }
 
             // filter by min price

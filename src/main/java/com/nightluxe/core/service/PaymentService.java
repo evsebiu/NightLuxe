@@ -47,7 +47,7 @@ public class PaymentService {
                 "price_amount", request.usdAmount(),
                 "price_currency", "usd",
                 "pay_currency", "usdttrc20", // TRON network for lower fees
-                "orderd_id", "USER_ " + currentUser.getId() + "_" + System.currentTimeMillis()
+                "order_id", "USER" + currentUser.getId() + "_" + System.currentTimeMillis()
         );
 
         // 3. we call external API using Webclient
@@ -70,10 +70,10 @@ public class PaymentService {
 
         // 4. Extract data from processor response
 
-        String txHash = responseNode.get("payment_id").asText();
+        String txHash = responseNode.get("id").asText();
         String payAddress = responseNode.get("pay_address").asText();
         BigDecimal payAmount = new BigDecimal(responseNode.get("pay_amount").asText());
-        String payCurrency = responseNode.get("payment_currency").asText();
+        String payCurrency = responseNode.get("pay_currency").asText();
 
 
         // 5. we save transaction in our database for PENDING status

@@ -7,6 +7,7 @@ import com.nightluxe.core.entity.AdImage;
 import com.nightluxe.core.entity.Advertisement;
 import com.nightluxe.core.entity.Category;
 import com.nightluxe.core.entity.User;
+import com.nightluxe.core.enums.UserAdDashboard;
 import com.nightluxe.core.exceptions.BadRequestException;
 import com.nightluxe.core.mapper.AdvertisementMapper;
 import com.nightluxe.core.repository.AdImageRepository;
@@ -15,6 +16,8 @@ import com.nightluxe.core.repository.CategoryRepository;
 import com.nightluxe.core.repository.UserRepository;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,7 +36,6 @@ import java.nio.file.StandardCopyOption;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.IllegalFormatCodePointException;
 import java.util.List;
 import java.util.UUID;
 
@@ -68,11 +70,13 @@ public class AdvertisementService {
         ad.setDescription(request.description());
         ad.setPrice(request.price());
         ad.setLocation(request.location());
+        ad.setPhoneNumber(request.phoneNumber());
 
         // relations with db
         ad.setCategory(category);
         ad.setUser(currentUser);
 
+        ad.setIsHighlighted(false);
         Advertisement savedAd = advertisementRepository.save(ad);
 
         return advertisementMapper.toResponseDTO(savedAd);
@@ -169,11 +173,24 @@ public class AdvertisementService {
     @Transactional(readOnly = true)
     public Page<AdvertisementResponseDTO> getAdvertisement(AdSearchCriteriaDTO criteria, Pageable pageable){
 
+        // 1. CREĂM O SORTARE NOUĂ, EXPLICITĂ CU NULLS LAST
+        Sort customSort = org.springframework.data.domain.Sort.by(
+                Sort.Order.desc("promotedUntil").nullsLast(),
+                Sort.Order.desc("createdAt")
+        );
+
+        // 2. SUPRASCRIEM PAGEABLE-UL VENIT DIN CONTROLLER
+        Pageable customPageable = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(), // Păstrăm pagina și dimensiunea pe care le cere frontend-ul
+                customSort              // Dar forțăm sortarea noastră strictă!
+        );
+
         // build specification based on sent filters
         Specification<Advertisement> spec = AdvertisementSpecification.getAdvertisementsByCriteria(criteria);
 
-        // interogate db using specification and pageable object
-        Page<Advertisement> adPage = advertisementRepository.findAll(spec, pageable);
+        // interogate db using specification and CUSTOM pageable object
+        Page<Advertisement> adPage = advertisementRepository.findAll(spec, customPageable);
 
         return adPage.map(advertisementMapper::toResponseDTO);
     }
@@ -191,20 +208,32 @@ public class AdvertisementService {
 
         // 2. define costs
         int cost = 0;
-        Instant newPromotedUntil = ad.getPromotedUntil() !=null ? ad.getPromotedUntil() : Instant.now();
+
+        Instant baseTimeForPromotion = (ad.getPromotedUntil() != null && ad.getPromotedUntil().isAfter(Instant.now()))
+                ? ad.getPromotedUntil()
+                : Instant.now();
 
         switch (request.promotionType().toUpperCase()){
             case "BUMP":
-                cost = 5;
-                ad.setCreatedAt(Instant.now());
+                cost = 20;
+                // Ocupă prima poziție non-stop timp de 6 ore
+                ad.setPromotedUntil(baseTimeForPromotion.plus(6, ChronoUnit.HOURS));
                 break;
-            case "TOP_AD_7_DAYS":
-                cost= 20;
-                ad.setPromotedUntil(newPromotedUntil.plus(7, ChronoUnit.DAYS));
-                break;
+
             case "HIGHLIGHT":
-                cost=10;
+                cost = 50;
                 ad.setIsHighlighted(true);
+                // Ocupă prima poziție non-stop timp de 24 de ore (1 zi)
+                ad.setPromotedUntil(baseTimeForPromotion.plus(24, ChronoUnit.HOURS));
+                break;
+
+            case "TOP_AD_7_DAYS":
+                cost = 100;
+                // Ocupă prima poziție non-stop timp de 7 zile
+                ad.setPromotedUntil(baseTimeForPromotion.plus(7, ChronoUnit.DAYS));
+                ad.setIsHighlighted(true);
+                break;
+
             default:
                 throw new BadRequestException("Promotion type unavailable");
         }
@@ -250,5 +279,48 @@ public class AdvertisementService {
     public Page<AdvertisementResponseDTO> getMyAdvertisements(User currentUser, Pageable pageable){
         Page<Advertisement> userAds = advertisementRepository.findByUserId(currentUser.getId(), pageable);
         return userAds.map(advertisementMapper::toResponseDTO);
+    }
+
+    @Transactional
+    public AdvertisementResponseDTO updateAdvertisement(Long adId, User currentUser, AdvertisementRequestDTO request){
+        Advertisement ad = advertisementRepository.findById(adId)
+                .orElseThrow(() -> new BadRequestException("Ad cannot be found"));
+
+        if (!ad.getUser().getId().equals(currentUser.getId())){
+            throw new RuntimeException("You are not authorized to edit this ad.");
+        }
+
+        ad.setTitle(request.title());
+        ad.setDescription(request.description());
+        ad.setPhoneNumber(request.phoneNumber());
+        ad.setLocation(request.location());
+        ad.setPrice(request.price());
+
+        if (request.categoryId() != null &&
+                (ad.getCategory() == null || !request.categoryId().equals(ad.getCategory().getId()))) {
+
+            Category newCategory = categoryRepository.findById(request.categoryId())
+                    .orElseThrow(() -> new BadRequestException("Category cannot be found"));
+            ad.setCategory(newCategory);
+        }
+        Advertisement savedAd = advertisementRepository.save(ad);
+
+        return advertisementMapper.toResponseDTO(savedAd);
+    }
+
+    @Transactional
+    public AdvertisementResponseDTO changeVisibility(Long adId, User currentUser, UserAdDashboard newStatus){
+        Advertisement ad = advertisementRepository.findById(adId)
+                .orElseThrow(()-> new BadRequestException("Ad cannot be found"));
+
+        if (!ad.getUser().getId().equals(currentUser.getId())) {
+            throw new RuntimeException("You don't have permission to edit this ad. Try again later");
+        }
+
+        ad.setUserAdDashboard(newStatus);
+
+        Advertisement savedAd = advertisementRepository.save(ad);
+
+        return advertisementMapper.toResponseDTO(savedAd);
     }
 }
